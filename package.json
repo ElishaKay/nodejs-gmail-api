@@ -1,0 +1,14 @@
+{
+  "name": "gmail-api-stuff",
+  "version": "1.0.0",
+  "main": "gmail.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "googleapis": "^34.0.0"
+  }
+}
