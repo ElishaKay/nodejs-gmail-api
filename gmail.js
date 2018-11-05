@@ -21,7 +21,7 @@ fs.readFile('client_secret.json', function processClientSecrets(err, content) {
   }
   // Authorize a client with the loaded credentials, then call the
   // Gmail API.
-  authorize(JSON.parse(content), listLabels);
+  authorize(JSON.parse(content), getRecentEmail);
 });
  
 /**
@@ -122,4 +122,43 @@ function listLabels(auth) {
       }
     }
   });
+}
+
+/**
+ * Get the recent email from your Gmail account
+ *
+ * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
+ */
+function getRecentEmail(auth) {
+    // Only get the recent email - 'maxResults' parameter
+    gmail.users.messages.list({auth: auth, userId: 'me', maxResults: 1,}, function(err, response) {
+        if (err) {
+            console.log('The API returned an error: ' + err);
+            return;
+        }
+ 
+      // Get the message id which we will need to retreive tha actual message next.
+      var message_id = response['data']['messages'][0]['id'];
+
+      // Retreive the actual message using the message id
+      gmail.users.messages.get({auth: auth, userId: 'me', 'id': message_id}, function(err, response) {
+          if (err) {
+              console.log('The API returned an error: ' + err);
+              return;
+          }
+
+          // Access the email body content, like this...
+          message_raw = response['data']['payload']['parts'][0].body.data;
+           
+          // or like this
+          message_raw = response.data.payload.parts[0].body.data;
+
+          data = message_raw;  
+          buff = new Buffer(data, 'base64');  
+          text = buff.toString();
+          console.log(text);
+ 
+         console.log(response['data']);
+      });
+    });
 }
